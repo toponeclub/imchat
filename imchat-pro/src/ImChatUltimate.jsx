@@ -17,6 +17,11 @@ import {
   ArrowLeft   // Для мобильной навигации
 } from 'lucide-react';
 
+// === ДОБАВИТЬ ЭТИ 2 СТРОКИ ===
+import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { useAccount } from 'wagmi'; 
+// =============================
+
 // Утилита: Преобразование строки в HEX
 const toHex = (string) => {
   return '0x' + Array.from(string, c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
@@ -191,6 +196,15 @@ export default function ImChatUltimate() {
   const recIntervalRef = useRef(null);
 
   const messagesEndRef = useRef(null);
+
+const { open } = useWeb3Modal(); // Хук для открытия модального окна
+  const { address, isConnected } = useAccount(); // Хук для проверки статуса
+
+  const handleConnect = () => {
+    // Эта функция открывает Web3Modal, который сам выбирает метод
+    open(); 
+  };
+  
 
   // Initial Load & Listeners
   useEffect(() => {
@@ -484,37 +498,41 @@ export default function ImChatUltimate() {
 
   // --- MAIN RENDER ---
 
-  // Login Screen
-  if (!account) {
-    return (
-      <div className="min-h-screen bg-[#040816] text-white flex items-center justify-center p-4">
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            .app-window { background-color: #101525; border-radius: 18px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7); }
-            .sidebar { background-color: #0F1321; }
-            .input-bg { background-color: #1C243B; }
-          `}}
-        />
-        <div className="app-window max-w-md w-full border border-white/10 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500" />
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
-              <Shield size={32} className="text-blue-500" />
-            </div>
-            <h1 className="text-3xl font-bold mb-2">ImChat Pro</h1>
-            <p className="text-gray-400 text-sm">Decentralized. Encrypted. MetaMask Auth.</p>
+// ImChatUltimate.jsx (Найдите старый блок if (!account) и замените его целиком)
+
+// Используем isConnected из Wagmi для проверки статуса
+if (!isConnected) {
+  return (
+    <div className="min-h-screen bg-[#040816] text-white flex items-center justify-center p-4">
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .app-window { background-color: #101525; border-radius: 18px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7); }
+          .sidebar { background-color: #0F1321; }
+          .input-bg { background-color: #1C243B; }
+        `}}
+      />
+      <div className="app-window max-w-md w-full border border-white/10 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500" />
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
+            <Shield size={32} className="text-blue-500" />
           </div>
-          <button 
-            onClick={connectWallet}
-            disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 rounded-xl font-bold text-sm transition shadow-lg shadow-blue-900/30 flex items-center justify-center gap-2"
-          >
-            {loading ? "Connecting..." : <><Wallet size={18} /> Connect Wallet</>}
-          </button>
+          <h1 className="text-3xl font-bold mb-2">ImChat Pro</h1>
+          <p className="text-gray-400 text-sm">Decentralized. Encrypted. Universal Wallet Auth.</p>
         </div>
+        <button 
+          // 🛑 НОВАЯ ЛОГИКА: Вызываем open() для открытия Web3Modal
+          onClick={() => open()}
+          // 🛑 Убрано disabled={loading}, так как Web3Modal сам управляет состоянием
+          className="w-full py-4 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 rounded-xl font-bold text-sm transition shadow-lg shadow-blue-900/30 flex items-center justify-center gap-2"
+        >
+          {/* 🛑 Убрана проверка loading. Всегда показываем кнопку подключения. */}
+          <Wallet size={18} /> Connect Wallet
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // Main App Screen
   return (
