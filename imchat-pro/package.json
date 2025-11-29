@@ -8,6 +8,12 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+"scripts": {
+  "dev": "vite",
+  "build": "vite build", // ЭТА КОМАНДА НУЖНА CLOUDFLARE
+  "preview": "vite preview"
+},
+  
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
